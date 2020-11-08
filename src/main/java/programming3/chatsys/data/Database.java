@@ -31,6 +31,9 @@ public class Database {
         messageList.add(chatMessage);
     }
     public List<ChatMessage> readMessages() throws IOException, ParseException {
+        // clean messageList
+        messageList.clear();
+
         BufferedReader reader = new BufferedReader(new FileReader(DB_file));
         String line ;
         ArrayList<String> temp = new ArrayList<>();
@@ -44,10 +47,13 @@ public class Database {
                 temp.add(line);
             }else {
                 initMessage(temp);
+                temp.clear();
+                temp.add(line);
             }
         }
         if (temp.size()==4){
             initMessage(temp);
+            temp.clear();
         }
 
         reader.close();
