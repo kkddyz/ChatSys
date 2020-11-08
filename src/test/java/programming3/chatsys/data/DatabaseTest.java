@@ -1,15 +1,11 @@
 package programming3.chatsys.data;
 
-import java.sql.Timestamp;
 import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
+import java.sql.Timestamp;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class DatabaseTest {
 
@@ -30,7 +26,7 @@ public class DatabaseTest {
         File testFile = new File("src\\test\\resources\\messages_test.txt");
         Database database = new Database(testFile);
         try {
-            List<ChatMessage> chatMessages = database.readMessage();
+            List<ChatMessage> chatMessages = database.readMessages();
             for (ChatMessage chatMessage : chatMessages) {
                 System.out.println(chatMessage.toString());
             }
@@ -39,4 +35,22 @@ public class DatabaseTest {
         }
     }
 
+    // need improvement : test more message
+    @Test
+    public void addMessage() {
+        ChatMessage validChatMessage = new ChatMessage(1,"abcy",new Timestamp(System.currentTimeMillis()),"你好 ！");
+        ChatMessage validChatMessage1 = new ChatMessage(1,"abcy",new Timestamp(System.currentTimeMillis()),"你好 !");
+        ChatMessage invalidChatMessage = new ChatMessage(1,"abcy$",new Timestamp(System.currentTimeMillis()),"你好 ！");
+        ChatMessage invalidChatMessage1 = new ChatMessage(1,"abcy",new Timestamp(System.currentTimeMillis()),"你好 !");
+
+        Database database = new Database(new File("src\\main\\resources\\database_file.txt"));
+        try {
+            database.addMessage(validChatMessage);
+            database.addMessage(validChatMessage1);
+            database.addMessage(invalidChatMessage);
+            database.addMessage(invalidChatMessage1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

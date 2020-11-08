@@ -131,7 +131,7 @@ public class ChatMessage {
      * @param file to save the object into that file
      * note :  Make sure that the file is opened in “append” mode.
      */
-    public boolean save(File file) throws IOException {
+    public void save(File file) throws IOException {
         // You can do this by creating first a FileWriter like this: “new FileWriter(filename, true)”. Then
         // you can pass the FileWriter to a PrintWriter.
         FileWriter writer = new FileWriter(file,true);
@@ -144,10 +144,9 @@ public class ChatMessage {
 
         writer.close();
 
-        // 用于断言
-        return true;
-
         //After your test are executed, don’t forget to remove the temporary file. You can do this
         //by defining a method “clean” inside your test class and use the annotations @AfterAll or @AfterEach
+
+        // 测试的临时文件由于database需要readMessages所以方法 database 测试类中删除
     }
 }

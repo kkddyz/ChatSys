@@ -34,8 +34,8 @@ public class ChatMessageTest {
 
         ChatMessage chatMessage = new ChatMessage(1,"user1",new Timestamp(System.currentTimeMillis()),"hello!");
         try {
-            // assertTrue : apply for method return boolean
-            assertTrue(chatMessage.save(testFile));
+
+            chatMessage.save(testFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
