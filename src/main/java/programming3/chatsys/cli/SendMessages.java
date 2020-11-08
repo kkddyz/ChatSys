@@ -2,7 +2,6 @@ package programming3.chatsys.cli;
 
 import programming3.chatsys.data.ChatMessage;
 import programming3.chatsys.data.Database;
-
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -67,24 +66,16 @@ public class SendMessages {
         send_client.setDatabase(new Database(new File("src\\main\\resources\\database_file.txt")));
 
 
-
         // Create a ChatMessage using the incremented last id as id,
         // the current time for timestamp and the username of the authenticated user.
-
-
         ChatMessage chatMessage = send_client.createChatMessage();
 
         //Save it in the message database.
-
         try {
             send_client.send(chatMessage);
         } catch (Exception e) {
             System.out.println("send failed");
             e.printStackTrace();
         }
-
-
     }
-
-
 }
