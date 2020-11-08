@@ -20,18 +20,6 @@ public class ChatMessageTest {
     //  After your test are executed, don’t forget to remove the temporary file.
     //  You can do this by defining a method “clean” inside your test class and use the annotations @AfterAll or @AfterEach.
 
-    @After // invoke after each test()
-    public void clean() throws Exception {
-        File file = new File("src\\test\\resources\\messages_test.txt");
-
-        if (file.exists()){
-            boolean deleted = file.delete();
-            if (!deleted){
-                throw new Exception("文件删除失败");
-            }
-        }
-    }
-
     @org.junit.Test
     public void format() {
     }
@@ -43,13 +31,13 @@ public class ChatMessageTest {
     @Test
     public void save() {
         File testFile = new File("src\\test\\resources\\messages_test.txt");
-        System.out.println(testFile.getAbsolutePath());
+
         ChatMessage chatMessage = new ChatMessage(1,"user1",new Timestamp(System.currentTimeMillis()),"hello!");
         try {
             // assertTrue : apply for method return boolean
             assertTrue(chatMessage.save(testFile));
         } catch (IOException e) {
-            assert false;
+            e.printStackTrace();
         }
     }
 }

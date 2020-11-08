@@ -1,12 +1,13 @@
 package programming3.chatsys.data;
 
 
-import org.omg.CORBA.PUBLIC_MEMBER;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class ChatMessage {
@@ -16,7 +17,7 @@ public class ChatMessage {
      */
     private int id;
     private String username;
-    private Timestamp timestamp;
+    private Timestamp timestamp; // extends java.utils,Date
     private String message;
 
     public int getId() {
@@ -33,6 +34,22 @@ public class ChatMessage {
 
     public String getMessage() {
         return message;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     @Override
@@ -67,6 +84,9 @@ public class ChatMessage {
         return result;
     }
 
+    public ChatMessage() {
+    }
+
     public ChatMessage(int id, String username, Timestamp timestamp, String message) {
         this.id = id;
         this.username = username;
@@ -79,17 +99,32 @@ public class ChatMessage {
      //For the time being, return null for theformat method and leave the parse method empty.
 
 
-    /**
-     *
-     * 和toString()有什么不同？？
-     * @return 返回表示对象的格式化String
-     */
+    // id and timestamp need format
 
-    public String format(){
-        return null;
+    /**
+     * format 就是把数据变成string
+     */
+    public String formatId(Integer id){
+        return id.toString();
     }
 
-    public void parse(){}
+    public String formatTimestamp(Timestamp timestamp){
+        return timestamp.toString();
+    }
+
+    /**
+     * parse 就是把string解析为数据
+     */
+    public Integer parseId(String id){
+        return Integer.parseInt(id);
+    }
+    public Timestamp parseTimestamp(String timestamp) throws ParseException {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = sdf.parse(timestamp);
+        return new Timestamp(date.getTime());
+
+    }
 
     /**
      * The method takes a file as an argument
@@ -104,8 +139,8 @@ public class ChatMessage {
         // save your results in a file “messages_test.txt”.
         writer.write(id+"\n");
         writer.write(username+"\n");
-        writer.write(message+"\n");
-        writer.write(timestamp.toString()+"\n");
+        writer.write(message +"\n");
+        writer.write(this.formatTimestamp(timestamp)+"\n");
 
         writer.close();
 
