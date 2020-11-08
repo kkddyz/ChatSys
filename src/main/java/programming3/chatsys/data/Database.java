@@ -124,16 +124,5 @@ public class Database {
         return true;
     }
 
-    public static void main(String[] args) {
-
-        char a = 'a';
-        char z = 'z';
-        char A = 'A';
-        char Z = 'Z';
-
-        char c = '0';
-        char d = '9';
-        char e = '\n';
-    }
 
 }
