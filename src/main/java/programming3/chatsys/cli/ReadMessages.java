@@ -20,14 +20,13 @@ public class ReadMessages {
         this.database = database;
     }
 
-    // Ask for a number n
-    public int getChatMessageId(){
+    // Ask for a number n.
+    public int getChatMessageId() {
         Scanner in = new Scanner(System.in);
         System.out.println("read recent chatMessage,need entry n");
         return in.nextInt();
     }
 
-    // Read the message database and display the n most recent messages.
     public void readRecentMessage(int n) throws IOException, ParseException {
         List<ChatMessage> chatMessages = database.readMessages();
         for (ChatMessage chatMessage : chatMessages) {
