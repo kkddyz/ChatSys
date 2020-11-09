@@ -20,6 +20,7 @@ public class ChatMessage {
     private Timestamp timestamp; // extends java.utils,Date
     private String message;
 
+
     public int getId() {
         return id;
     }
@@ -87,11 +88,11 @@ public class ChatMessage {
     public ChatMessage() {
     }
 
-    public ChatMessage(int id, String username, Timestamp timestamp, String message) {
+    public ChatMessage(int id, String username, String message,Timestamp timestamp ) {
         this.id = id;
         this.username = username;
-        this.timestamp = timestamp;
         this.message = message;
+        this.timestamp = timestamp;
     }
 
 
@@ -126,11 +127,7 @@ public class ChatMessage {
 
     }
 
-    /**
-     * The method takes a file as an argument
-     * @param file to save the object into that file
-     * note :  Make sure that the file is opened in “append” mode.
-     */
+
     public void save(File file) throws IOException {
         // You can do this by creating first a FileWriter like this: “new FileWriter(filename, true)”. Then
         // you can pass the FileWriter to a PrintWriter.

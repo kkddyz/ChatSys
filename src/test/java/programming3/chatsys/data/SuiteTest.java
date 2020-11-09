@@ -4,7 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ChatMessageTest.class,DatabaseTest.class})
+@Suite.SuiteClasses({ChatMessageTest.class,UserTest.class,DatabaseTest.class})
 public class SuiteTest {
 
 }

@@ -12,6 +12,7 @@ import java.util.Scanner;
 
 public class ReadMessages {
     private Database database;
+
     public ReadMessages() {
     }
 
@@ -30,22 +31,26 @@ public class ReadMessages {
     public void readRecentMessage(int n) throws IOException, ParseException {
         List<ChatMessage> chatMessages = database.readMessages();
         for (ChatMessage chatMessage : chatMessages) {
-            if(chatMessage.getId()> n){
-                System.out.println(chatMessage.getUsername()+": "+chatMessage.getMessage());
+            if (chatMessage.getId() > n) {
+                System.out.println(chatMessage.getUsername() + ": " + chatMessage.getMessage().replaceAll("\\\\r\\\\n","\n"));
             }
         }
     }
 
     public static void main(String[] args) {
+        System.out.println("--------------------read message cli-----------------------------------");
+        System.out.println();
         ReadMessages read_client = new ReadMessages();
-        read_client.setDatabase(new Database(new File("src\\main\\resources\\database_file.txt")));
+        read_client.setDatabase(new Database());
+
         int n = read_client.getChatMessageId();
 
         try {
             read_client.readRecentMessage(n);
-        } catch (IOException | ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
 }

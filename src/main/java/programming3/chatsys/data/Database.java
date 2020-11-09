@@ -15,12 +15,14 @@ public class Database {
     private File DB_messages_file = new File("src\\main\\resources\\database_messages_file.txt");
     private File DB_users_file = new File("src\\main\\resources\\database_users_file.txt");
 
-    private List<ChatMessage> messageList = new ArrayList<>(); // message容器
-    private Map <String,User> userList = new HashMap<>(); // user容器
+    private List<ChatMessage> messageList = new ArrayList<ChatMessage>(); // message容器
+    private Map<String, User> userMap = new HashMap<String, User>(); // user容器
 
     // constructor && setter
-    public Database(){}
-    public Database(File DB_messages_file,File DB_users_file) {
+    public Database() {
+    }
+
+    public Database(File DB_messages_file, File DB_users_file) {
         this.DB_messages_file = DB_messages_file;
         this.DB_users_file = DB_users_file;
     }
@@ -34,7 +36,7 @@ public class Database {
     }
 
     //
-    private void addMessage(ArrayList<String> temp) throws ParseException {
+    private void initMessage(ArrayList<String> temp) throws ParseException {
         ChatMessage chatMessage = new ChatMessage();
         int id = chatMessage.parseId(temp.get(0));
         chatMessage.setId(id);
@@ -46,16 +48,24 @@ public class Database {
         chatMessage.setTimestamp(timeStamp);
         messageList.add(chatMessage);
     }
-    private void addUser(ArrayList<String> temp) {
+
+    /**
+     * 根据txt创建对象保存到DB容器中
+     */
+    private void initUser(ArrayList<String> temp) {
         // init
         User user = new User();
-        String username = temp.get(0); user.setUserName(username);
-        String fullName = temp.get(1); user.setFullName(fullName);
-        String password = temp.get(2); user.setPassWard(password);
-        String lastReadId = temp.get(3); user.setLastReadID(user.parseLastReadID(lastReadId));
+        String username = temp.get(0);
+        user.setUserName(username);
+        String fullName = temp.get(1);
+        user.setFullName(fullName);
+        String password = temp.get(2);
+        user.setPassWard(password);
+        String lastReadId = temp.get(3);
+        user.setLastReadID(user.parseLastReadID(lastReadId));
 
         // add
-        userList.put(username,user);
+        userMap.put(username, user);
     }
 
     public List<ChatMessage> readMessages() throws IOException, ParseException {
@@ -63,24 +73,24 @@ public class Database {
         messageList.clear();
 
         BufferedReader reader = new BufferedReader(new FileReader(DB_messages_file));
-        ArrayList<String> temp = new ArrayList<>();
-        String line ;
+        ArrayList<String> temp = new ArrayList<String>();
+        String line;
 
         // readLine() will keep on reading the next line from the file
         // and once it reaches the end of the file it returns null.
 
-        while ((line=reader.readLine())!=null) {
+        while ((line = reader.readLine()) != null) {
             // according to line init messages and add to messageList
-            if (temp.size()<4){
+            if (temp.size() < 4) {
                 temp.add(line);
-            }else {
-                addMessage(temp);
+            } else {
+                initMessage(temp);
                 temp.clear();
                 temp.add(line);
             }
         }
-        if (temp.size()==4){
-            addMessage(temp);
+        if (temp.size() == 4) {
+            initMessage(temp);
             temp.clear();
         }
 
@@ -90,25 +100,27 @@ public class Database {
         return messageList;
     }
 
-    public Map<String,User> readUsers() throws IOException {
-        userList.clear(); // 预处理
+    public Map<String, User> readUsers() throws IOException {
+        userMap.clear(); // 预处理
 
         BufferedReader reader = new BufferedReader(new FileReader(DB_users_file));
-        ArrayList<String> temp = new ArrayList<>();
+        ArrayList<String> temp = new ArrayList<String>();
         String line;
 
-        while ((line=reader.readLine())!=null){
-            if (temp.size()<4){
+        while ((line = reader.readLine()) != null) {
+            if (temp.size() < 4) {
                 temp.add(line);
-            }else {
-                addUser(temp);
+            } else {
+                initUser(temp);
                 temp.clear();
                 temp.add(line);
             }
         }
-        return userList;
+        if (temp.size()==4){
+            initUser(temp);
+        }
+        return userMap;
     }
-
 
 
     /**
@@ -117,16 +129,15 @@ public class Database {
      * database. If it doesn’t, the method should throw an exception.
      */
 
-    public void addMessage(ChatMessage chatMessage) throws Exception {
+    public void initMessage(ChatMessage chatMessage) throws Exception {
         // check message
-        if (isValidId(chatMessage.getId()) && isValidMessage(chatMessage)){
+        if (isValidId(chatMessage.getId()) && isValidMessage(chatMessage)) {
             chatMessage.save(DB_messages_file);
-        }else {
-            throw new Exception(chatMessage+" is not valid ");
+        } else {
+            throw new Exception(chatMessage + " is not valid ");
         }
 
     }
-
 
 
     /**
@@ -134,9 +145,10 @@ public class Database {
      */
     private boolean isValidId(int id) throws IOException, ParseException {
 
+
         messageList = readMessages();
         for (ChatMessage message : messageList) {
-            if(message.getId()>id)
+            if (message.getId() > id)
                 return false;
         }
         return true;
@@ -151,14 +163,17 @@ public class Database {
     private boolean isValidMessage(ChatMessage chatMessage) {
         String username = chatMessage.getUsername();
         String message = chatMessage.getMessage();
-        return isValidUsername(username)&&noLineBreak(message);
+        return isValidName(username) && noLineBreak(message);
     }
 
+    /**
+     * 规则 没有'\n'
+     * 应用：ChatMessage.message User.password
+     */
     private boolean noLineBreak(String message) {
-        // 只需检查message
         char[] chars = message.toCharArray();
         for (char aChar : chars) {
-            if (aChar == '\n'){
+            if (aChar == '\n') {
                 return false;
             }
         }
@@ -166,12 +181,16 @@ public class Database {
         return true;
     }
 
-    private boolean isValidUsername(String username) {
+    /**
+     * 规则 只有 num,letter,_
+     * 应用于 user : User .username , fullName
+     */
+    private boolean isValidName(String username) {
 
         char[] chars = username.toCharArray();
         for (char aChar : chars) {
             // valid range
-            if(aChar!='_'&&(aChar<48||(aChar>57&&aChar<65)||(aChar>90&&aChar<97)||aChar>122)){
+            if (aChar != '_' && (aChar < 48 || (aChar > 57 && aChar < 65) || (aChar > 90 && aChar < 97) || aChar > 122)) {
                 return false;
             }
         }
@@ -179,4 +198,46 @@ public class Database {
     }
 
 
+    public void addUsr(User user) throws IOException {
+        String username = user.getUserName();
+        String fullName = user.getFullName();
+        String password = user.getPassword();
+        if (isValidName(username) && isValidName(fullName) && noLineBreak(password)) {
+            user.save(DB_users_file);
+        } else {
+            System.out.println("invalid user name");
+            System.exit(0);
+        }
+
+    }
+
+    /**
+     * 判断message是否空
+     */
+    public boolean isEmpty() throws IOException, ParseException {
+
+        messageList = readMessages();
+        return messageList.isEmpty();
+    }
+
+    public int getLastMessageID() {
+        int lastReadID = 0;
+        try {
+            messageList = readMessages();
+            if (!messageList.isEmpty()) {
+                for (ChatMessage chatMessage : messageList) {
+                    if (chatMessage.getId() > lastReadID) {
+                        lastReadID = chatMessage.getId();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return lastReadID;
+    }
 }
+
+
+
+

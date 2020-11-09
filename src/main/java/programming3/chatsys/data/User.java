@@ -10,16 +10,16 @@ import java.io.IOException;
 public class User {
     private String userName;
     private String fullName;
-    private String passWard;
+    private String password;
     private int lastReadID = 0; // default, the lastReadId of a User is 0
 
     public User() {
     }
 
-    public User(String userName, String fullName, String passWard, int lastReadID) {
+    public User(String userName, String fullName, String password, int lastReadID) {
         this.userName = userName;
         this.fullName = fullName;
-        this.passWard = passWard;
+        this.password = password;
         this.lastReadID = lastReadID;
     }
 
@@ -32,8 +32,8 @@ public class User {
         return fullName;
     }
 
-    public String getPassWard() {
-        return passWard;
+    public String getPassword() {
+        return password;
     }
 
     public int getLastReadID() {
@@ -49,7 +49,7 @@ public class User {
     }
 
     public void setPassWard(String passWard) {
-        this.passWard = passWard;
+        this.password = passWard;
     }
 
     public void setLastReadID(int lastReadID) {
@@ -61,7 +61,7 @@ public class User {
         return "User{" +
                 "userName='" + userName + '\'' +
                 ", fullName='" + fullName + '\'' +
-                ", passWard='" + passWard + '\'' +
+                ", passWard='" + password + '\'' +
                 ", lastReadID=" + lastReadID +
                 '}';
     }
@@ -76,14 +76,14 @@ public class User {
         if (lastReadID != user.lastReadID) return false;
         if (userName != null ? !userName.equals(user.userName) : user.userName != null) return false;
         if (fullName != null ? !fullName.equals(user.fullName) : user.fullName != null) return false;
-        return passWard != null ? passWard.equals(user.passWard) : user.passWard == null;
+        return password != null ? password.equals(user.password) : user.password == null;
     }
 
     @Override
     public int hashCode() {
         int result = userName != null ? userName.hashCode() : 0;
         result = 31 * result + (fullName != null ? fullName.hashCode() : 0);
-        result = 31 * result + (passWard != null ? passWard.hashCode() : 0);
+        result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + lastReadID;
         return result;
     }
@@ -107,7 +107,7 @@ public class User {
         // save your results in a file “user_test.txt”.
         writer.write(userName + "\n");
         writer.write(fullName + "\n");
-        writer.write(passWard + "\n");
+        writer.write(password + "\n");
         writer.write(this.formatLastReadID() + "\n");
 
         writer.close();

@@ -1,6 +1,7 @@
 package programming3.chatsys.data;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -20,19 +21,44 @@ public class ChatMessageTest {
     //  After your test are executed, don’t forget to remove the temporary file.
     //  You can do this by defining a method “clean” inside your test class and use the annotations @AfterAll or @AfterEach.
 
+    // format含有'\n'的username
+    @Ignore
     @org.junit.Test
     public void format() {
+        String message = "你好\nhello";
+        ChatMessage chatMessage = new ChatMessage(100, "fff", message, new Timestamp(System.currentTimeMillis()));
+        // because '\n' we can only read "你好" and hello will left to timestamp
+        try {
+            chatMessage.setTimestamp(new Timestamp(Long.parseLong("hello")));
+            chatMessage.formatTimestamp();
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert false;
+        }
     }
 
+    // parse含有'\n'的id
+    @Ignore
     @org.junit.Test
     public void parse() {
+
+        String id = "9\n";
+        ChatMessage chatMessage = new ChatMessage();
+        try {
+            chatMessage.parseId(id);
+        } catch (NumberFormatException e) {
+            System.out.println("parse failed");
+            assert false;
+        }
+
+
     }
 
     @Test
     public void save() {
         File testFile = new File("src\\test\\resources\\messages_test.txt");
 
-        ChatMessage chatMessage = new ChatMessage(1,"user1",new Timestamp(System.currentTimeMillis()),"hello!");
+        ChatMessage chatMessage = new ChatMessage(1, "user1", "hello!", new Timestamp(System.currentTimeMillis()));
         try {
 
             chatMessage.save(testFile);
