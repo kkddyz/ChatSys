@@ -104,11 +104,11 @@ public class ChatMessage {
     /**
      * format 就是把数据变成string
      */
-    public String formatId(Integer id){
-        return id.toString();
+    public String formatId(){
+        return Integer.toString(id);
     }
 
-    public String formatTimestamp(Timestamp timestamp){
+    public String formatTimestamp(){
         return timestamp.toString();
     }
 
@@ -140,7 +140,7 @@ public class ChatMessage {
         writer.write(id+"\n");
         writer.write(username+"\n");
         writer.write(message +"\n");
-        writer.write(this.formatTimestamp(timestamp)+"\n");
+        writer.write(this.formatTimestamp()+"\n");
 
         writer.close();
 

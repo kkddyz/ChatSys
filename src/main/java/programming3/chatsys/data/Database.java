@@ -4,21 +4,37 @@ import java.io.*;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Database {
 
     // For the time being, the class will have one attributes referencing the file for the message database
 
-    private File DB_file;
+    private File DB_messages_file = new File("src\\main\\resources\\database_messages_file.txt");
+    private File DB_users_file = new File("src\\main\\resources\\database_users_file.txt");
 
-    private List<ChatMessage> messageList = new ArrayList<>();
+    private List<ChatMessage> messageList = new ArrayList<>(); // message容器
+    private Map <String,User> userList = new HashMap<>(); // user容器
 
-    public Database(File DB_file) {
-        this.DB_file = DB_file;
+    // constructor && setter
+    public Database(){}
+    public Database(File DB_messages_file,File DB_users_file) {
+        this.DB_messages_file = DB_messages_file;
+        this.DB_users_file = DB_users_file;
     }
 
-    private void initMessage(ArrayList<String> temp) throws ParseException {
+    public void setDB_messages_file(File DB_messages_file) {
+        this.DB_messages_file = DB_messages_file;
+    }
+
+    public void setDB_users_file(File DB_users_file) {
+        this.DB_users_file = DB_users_file;
+    }
+
+    //
+    private void addMessage(ArrayList<String> temp) throws ParseException {
         ChatMessage chatMessage = new ChatMessage();
         int id = chatMessage.parseId(temp.get(0));
         chatMessage.setId(id);
@@ -30,13 +46,25 @@ public class Database {
         chatMessage.setTimestamp(timeStamp);
         messageList.add(chatMessage);
     }
+    private void addUser(ArrayList<String> temp) {
+        // init
+        User user = new User();
+        String username = temp.get(0); user.setUserName(username);
+        String fullName = temp.get(1); user.setFullName(fullName);
+        String password = temp.get(2); user.setPassWard(password);
+        String lastReadId = temp.get(3); user.setLastReadID(user.parseLastReadID(lastReadId));
+
+        // add
+        userList.put(username,user);
+    }
+
     public List<ChatMessage> readMessages() throws IOException, ParseException {
         // clean messageList
         messageList.clear();
 
-        BufferedReader reader = new BufferedReader(new FileReader(DB_file));
-        String line ;
+        BufferedReader reader = new BufferedReader(new FileReader(DB_messages_file));
         ArrayList<String> temp = new ArrayList<>();
+        String line ;
 
         // readLine() will keep on reading the next line from the file
         // and once it reaches the end of the file it returns null.
@@ -46,13 +74,13 @@ public class Database {
             if (temp.size()<4){
                 temp.add(line);
             }else {
-                initMessage(temp);
+                addMessage(temp);
                 temp.clear();
                 temp.add(line);
             }
         }
         if (temp.size()==4){
-            initMessage(temp);
+            addMessage(temp);
             temp.clear();
         }
 
@@ -62,15 +90,37 @@ public class Database {
         return messageList;
     }
 
-    /*Add to the Database a method addMessage that takes a ChatMessage as argument and adds it to the database
-    file. The chat message added should have an id greater than all the ids of all the chat messages already in the
-    database. If it doesn’t, the method should throw an exception.*/
+    public Map<String,User> readUsers() throws IOException {
+        userList.clear(); // 预处理
 
+        BufferedReader reader = new BufferedReader(new FileReader(DB_users_file));
+        ArrayList<String> temp = new ArrayList<>();
+        String line;
+
+        while ((line=reader.readLine())!=null){
+            if (temp.size()<4){
+                temp.add(line);
+            }else {
+                addUser(temp);
+                temp.clear();
+                temp.add(line);
+            }
+        }
+        return userList;
+    }
+
+
+
+    /**
+     * Add to the Database a method addMessage that takes a ChatMessage as argument and adds it to the database
+     * file. The chat message added should have an id greater than all the ids of all the chat messages already in the
+     * database. If it doesn’t, the method should throw an exception.
+     */
 
     public void addMessage(ChatMessage chatMessage) throws Exception {
         // check message
         if (isValidId(chatMessage.getId()) && isValidMessage(chatMessage)){
-            chatMessage.save(DB_file);
+            chatMessage.save(DB_messages_file);
         }else {
             throw new Exception(chatMessage+" is not valid ");
         }
@@ -92,6 +142,7 @@ public class Database {
         return true;
 
     }
+
     /**
      * 判断输入内容是否是合法
      * 1. message不可以有'\n'
@@ -103,11 +154,8 @@ public class Database {
         return isValidUsername(username)&&noLineBreak(message);
     }
 
-    /**
-     * 只需检查message
-     */
     private boolean noLineBreak(String message) {
-
+        // 只需检查message
         char[] chars = message.toCharArray();
         for (char aChar : chars) {
             if (aChar == '\n'){

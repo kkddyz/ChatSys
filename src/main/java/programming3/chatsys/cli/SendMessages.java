@@ -30,13 +30,13 @@ public class SendMessages {
     }
 
     // Check if the database exists and is not empty and get lastId
-    private int getLastId(){
+    private int getLastId() {
 
         try {
             List<ChatMessage> chatMessages = database.readMessages();
-            if (!chatMessages.isEmpty()){
+            if (!chatMessages.isEmpty()) {
                 for (ChatMessage chatMessage : chatMessages) {
-                    if(chatMessage.getId()>lastId){
+                    if (chatMessage.getId() > lastId) {
                         lastId = chatMessage.getId();
                     }
                 }
@@ -44,33 +44,36 @@ public class SendMessages {
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
-        return lastId ;
+        return lastId;
     }
 
-    private String getMessage(){
+    private String getMessage() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("entry text please.");
         return scanner.nextLine();
     }
-    public ChatMessage createChatMessage(){
+
+    public ChatMessage createChatMessage() {
         lastId = getLastId();
         lastId++;
-        return new ChatMessage(lastId,getUsername(),new Timestamp(System.currentTimeMillis()),getMessage());
+        return new ChatMessage(lastId, getUsername(), new Timestamp(System.currentTimeMillis()), getMessage());
     }
 
     public void send(ChatMessage chatMessage) throws Exception {
         database.addMessage(chatMessage);
     }
+
     public static void main(String[] args) {
         SendMessages send_client = new SendMessages();
-        send_client.setDatabase(new Database(new File("src\\main\\resources\\database_file.txt")));
-
+        send_client.setDatabase(new Database());
 
         // Create a ChatMessage using the incremented last id as id,
         // the current time for timestamp and the username of the authenticated user.
+
         ChatMessage chatMessage = send_client.createChatMessage();
 
         //Save it in the message database.
+
         try {
             send_client.send(chatMessage);
         } catch (Exception e) {

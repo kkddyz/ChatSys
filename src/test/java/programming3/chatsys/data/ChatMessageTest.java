@@ -38,6 +38,7 @@ public class ChatMessageTest {
             chatMessage.save(testFile);
         } catch (IOException e) {
             e.printStackTrace();
+            assert false;
         }
     }
 }
