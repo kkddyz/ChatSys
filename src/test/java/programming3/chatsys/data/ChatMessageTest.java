@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -56,12 +58,20 @@ public class ChatMessageTest {
 
     @Test
     public void save() {
-        File testFile = new File("src\\test\\resources\\messages_test.txt");
+        File testFile = new File("src\\test\\resources\\test_unreadMessages_DB_message_file.txt");
 
-        ChatMessage chatMessage = new ChatMessage(1, "user1", "hello!", new Timestamp(System.currentTimeMillis()));
+        List<ChatMessage> chatMessages = new ArrayList<>();
+        chatMessages.add(new ChatMessage(1, "user1", "hello1!", new Timestamp(System.currentTimeMillis())));
+        chatMessages.add(new ChatMessage(2, "user2", "hello2!", new Timestamp(System.currentTimeMillis())));
+        chatMessages.add(new ChatMessage(3, "user2", "hello3!", new Timestamp(System.currentTimeMillis())));
+        chatMessages.add(new ChatMessage(4, "user2", "hello4!", new Timestamp(System.currentTimeMillis())));
+        chatMessages.add(new ChatMessage(5, "user2", "hello5!", new Timestamp(System.currentTimeMillis())));
+        chatMessages.add(new ChatMessage(6, "user3", "hello6!", new Timestamp(System.currentTimeMillis())));
+        chatMessages.add(new ChatMessage(7, "user3", "hello7!", new Timestamp(System.currentTimeMillis())));
         try {
-
-            chatMessage.save(testFile);
+            for (ChatMessage chatMessage : chatMessages) {
+                chatMessage.save(testFile);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             assert false;
