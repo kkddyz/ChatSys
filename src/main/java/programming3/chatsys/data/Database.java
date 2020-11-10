@@ -3,10 +3,7 @@ package programming3.chatsys.data;
 import java.io.*;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Database {
 
@@ -35,7 +32,7 @@ public class Database {
         this.DB_users_file = DB_users_file;
     }
 
-    //
+    // init指将对象从文件取出放入BD容器
     private void initMessage(ArrayList<String> temp) throws ParseException {
         ChatMessage chatMessage = new ChatMessage();
         int id = chatMessage.parseId(temp.get(0));
@@ -49,9 +46,6 @@ public class Database {
         messageList.add(chatMessage);
     }
 
-    /**
-     * 根据txt创建对象保存到DB容器中
-     */
     private void initUser(ArrayList<String> temp) {
         // init
         User user = new User();
@@ -123,12 +117,8 @@ public class Database {
     }
 
 
-    /**
-     * Add to the Database a method addMessage that takes a ChatMessage as argument and adds it to the database
-     * file. The chat message added should have an id greater than all the ids of all the chat messages already in the
-     * database. If it doesn’t, the method should throw an exception.
-     */
 
+    // add指将对象存入BD文件
     public void addMessage(ChatMessage chatMessage) throws Exception {
         // check message
         if (isValidId(chatMessage.getId()) && isValidMessage(chatMessage)) {
@@ -139,17 +129,29 @@ public class Database {
 
     }
 
+    public void addUsr(User user) throws IOException {
+        String username = user.getUserName();
+        String fullName = user.getFullName();
+        String password = user.getPassword();
+        if (isValidName(username) && isValidName(fullName) && noLineBreak(password)) {
+            user.save(DB_users_file);
+        } else {
+            System.out.println("invalid user name");
+            System.exit(0);
+        }
+
+    }
 
     /**
-     * 从数据库读取信息判断id是否合理
+     * 从数据库读取信息判断id是否合理 不合理抛出异常
      */
-    private boolean isValidId(int id) throws IOException, ParseException {
+    private boolean isValidId(int id) throws Exception {
 
 
         messageList = readMessages();
         for (ChatMessage message : messageList) {
             if (message.getId() > id)
-                return false;
+                throw new Exception("invalid id");
         }
         return true;
 
@@ -197,20 +199,41 @@ public class Database {
         return true;
     }
 
+    // -------------------------------------------------------------------------------------------
 
-    public void addUsr(User user) throws IOException {
-        String username = user.getUserName();
-        String fullName = user.getFullName();
-        String password = user.getPassword();
-        if (isValidName(username) && isValidName(fullName) && noLineBreak(password)) {
+    // 在getUnreadMessage中调用 已经读取userMap
+    private void updateLastReadID(String username,int id) throws IOException {
+
+        //Update the last read id of the user matching the username provided as argument with the id provided as argument
+        userMap.get(username).setLastReadID(id);
+        File newFile = DB_users_file;
+        // 删除user文件
+        newFile.delete();newFile.createNewFile();
+        Set<String> usernames = userMap.keySet();
+        for (String username1 : usernames) {
+            User user = userMap.get(username1);
             user.save(DB_users_file);
-        } else {
-            System.out.println("invalid user name");
-            System.exit(0);
         }
 
     }
+    public List<ChatMessage> getUnreadMessage(String username) throws IOException, ParseException {
+        ArrayList<ChatMessage> unreadMessages = new ArrayList<>();
+        messageList = readMessages();
+        userMap = readUsers();
+        User user = userMap.get(username);
+        // select user match，并获取其上次读取的ID
+        int user_lastReadID = user.getLastReadID();
+        // Select the subset of messages that have an id greater than the last read id
+        for (ChatMessage chatMessage : messageList) {
+            if (chatMessage.getId()>user_lastReadID){
+                unreadMessages.add(chatMessage);
+            }
+        }
+        // Call updateLastRead with the id of the message that has the greatest id
+        updateLastReadID(username,getLastMessageID());
 
+        return unreadMessages;
+    }
     /**
      * 判断message是否空
      */
@@ -220,6 +243,9 @@ public class Database {
         return messageList.isEmpty();
     }
 
+    /**
+     *
+     */
     public int getLastMessageID() {
         int lastReadID = 0;
         try {
