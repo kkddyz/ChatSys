@@ -15,8 +15,8 @@ public class Database {
     private File DB_messages_file = new File("src\\main\\resources\\database_messages_file.txt");
     private File DB_users_file = new File("src\\main\\resources\\database_users_file.txt");
 
-    private List<ChatMessage> messageList = new ArrayList<ChatMessage>(); // message容器
-    private Map<String, User> userMap = new HashMap<String, User>(); // user容器
+    private List<ChatMessage> messageList = new ArrayList<>(); // message容器
+    private Map<String, User> userMap = new HashMap<>(); // user容器
 
     // constructor && setter
     public Database() {
@@ -73,7 +73,7 @@ public class Database {
         messageList.clear();
 
         BufferedReader reader = new BufferedReader(new FileReader(DB_messages_file));
-        ArrayList<String> temp = new ArrayList<String>();
+        ArrayList<String> temp = new ArrayList<>();
         String line;
 
         // readLine() will keep on reading the next line from the file
@@ -104,7 +104,7 @@ public class Database {
         userMap.clear(); // 预处理
 
         BufferedReader reader = new BufferedReader(new FileReader(DB_users_file));
-        ArrayList<String> temp = new ArrayList<String>();
+        ArrayList<String> temp = new ArrayList<>();
         String line;
 
         while ((line = reader.readLine()) != null) {
@@ -129,7 +129,7 @@ public class Database {
      * database. If it doesn’t, the method should throw an exception.
      */
 
-    public void initMessage(ChatMessage chatMessage) throws Exception {
+    public void addMessage(ChatMessage chatMessage) throws Exception {
         // check message
         if (isValidId(chatMessage.getId()) && isValidMessage(chatMessage)) {
             chatMessage.save(DB_messages_file);

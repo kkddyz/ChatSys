@@ -45,7 +45,7 @@ public class SendMessages {
     }
 
     protected void send(ChatMessage chatMessage) throws Exception {
-        database.initMessage(chatMessage);
+        database.addMessage(chatMessage);
     }
 
     public void run() {

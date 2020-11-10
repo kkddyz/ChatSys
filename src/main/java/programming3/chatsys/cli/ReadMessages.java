@@ -20,28 +20,26 @@ public class ReadMessages {
         this.database = database;
     }
 
-    // Ask for a number n.
+    // Ask for a number n
     public int getChatMessageId() {
         Scanner in = new Scanner(System.in);
         System.out.println("read recent chatMessage,need entry n");
         return in.nextInt();
     }
 
+    // Read the message database and display the n most recent messages.
     public void readRecentMessage(int n) throws IOException, ParseException {
         List<ChatMessage> chatMessages = database.readMessages();
         for (ChatMessage chatMessage : chatMessages) {
             if (chatMessage.getId() > n) {
-                System.out.println(chatMessage.getUsername() + ": " + chatMessage.getMessage().replaceAll("\\\\r\\\\n","\n"));
+                System.out.println(chatMessage.getUsername() + ": " + chatMessage.getMessage());
             }
         }
     }
 
     public static void main(String[] args) {
-        System.out.println("--------------------read message cli-----------------------------------");
-        System.out.println();
         ReadMessages read_client = new ReadMessages();
         read_client.setDatabase(new Database());
-
         int n = read_client.getChatMessageId();
 
         try {
@@ -49,7 +47,6 @@ public class ReadMessages {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
-
-
 }
